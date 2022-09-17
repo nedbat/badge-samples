@@ -23,15 +23,43 @@ jobs:
     strategy:
       matrix:
         total:
+          # [[[cog
+          #   for num in range(40, 101, 5):
+          #       print(f"- {num}")
+          # ]]]
           - 40
+          - 45
           - 50
+          - 55
           - 60
+          - 65
           - 70
+          - 75
           - 80
+          - 85
           - 90
+          - 95
           - 100
+          # [[[end]]]
+
 
     steps:
-      - name: show it
+      - name: "Stagger"
         run: |
-          echo coverage is ${{ matrix.total }}
+          # Gist returns 500 if we try to update many files in the same gist
+          # all at once. Use this to stagger the attempts.
+          sleep $( expr ${{ matrix.total }} - 39 )
+
+      - name: "Make badge"
+        # https://gist.github.com/nedbat/a27aaed4944c1f760a969a543fb52767
+        uses: schneegans/dynamic-badges-action@v1.4.0
+        with:
+          # GIST_TOKEN is a GitHub personal access token with scope "gist".
+          auth: ${{ secrets.GIST_TOKEN }}
+          gistID: a27aaed4944c1f760a969a543fb52767
+          filename: covbadge2_${{ matrix.total }}.json
+          label: Coverage
+          message: ${{ matrix.total }}%
+          minColorRange: 50
+          maxColorRange: 90
+          valColorRange: ${{ matrix.total }}
