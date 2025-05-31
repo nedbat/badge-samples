@@ -48,16 +48,19 @@ jobs:
 
     steps:
       - name: "Stagger"
+        env:
+          TOTAL: ${{ matrix.total }}
         run: |
           # Gist returns 500 if we try to update many files in the same gist
           # all at once. Use this to stagger the attempts.
-          sleep $( expr ${{ matrix.total }} - 39 )
+          sleep $( expr $TOTAL - 39 )
 
       - name: "Make badge"
         # https://gist.github.com/nedbat/a27aaed4944c1f760a969a543fb52767
-        uses: schneegans/dynamic-badges-action@v1.4.0
+        uses: schneegans/dynamic-badges-action@e9a478b16159b4d31420099ba146cdc50f134483 # v1.7.0
         with:
           # GIST_TOKEN is a GitHub personal access token with scope "gist".
+          # https://github.com/settings/personal-access-tokens/6850170
           auth: ${{ secrets.GIST_TOKEN }}
           gistID: a27aaed4944c1f760a969a543fb52767
           filename: covbadge2_${{ matrix.total }}.json
